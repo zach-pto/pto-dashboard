@@ -1,0 +1,358 @@
+PASTE-TEST<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>PTO Mini Grant Dashboard</title>
+<style>
+:root{color-scheme:light dark;--surface:#fcfcfb;--page:#f9f9f7;--ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;--grid:#e1e0d9;--border:rgba(11,11,11,0.10);--link:#2a78d6;}
+@media (prefers-color-scheme:dark){:root{--surface:#1a1a19;--page:#0d0d0d;--ink:#ffffff;--ink-2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--border:rgba(255,255,255,0.10);--link:#6aa9f0;}}
+*{box-sizing:border-box;}
+body{margin:0;padding:24px 16px 48px;background:var(--page);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;}
+.wrap{max-width:840px;margin:0 auto;}
+h1{font-size:22px;margin:0 0 4px;}
+.subtitle{color:var(--ink-2);font-size:14px;margin:0 0 14px;}
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.btn{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;}
+.btn:hover{border-color:var(--muted);}
+.btn:disabled{opacity:0.5;cursor:default;}
+.updated{font-size:12.5px;color:var(--muted);}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px;}
+.stat{flex:1 1 130px;background:var(--surface);border:1px solid var(--border);border-left-width:4px;border-radius:10px;padding:14px 16px;}
+.stat-value{font-size:26px;font-weight:600;line-height:1.1;}
+.stat-label{font-size:12.5px;color:var(--ink-2);margin-top:4px;}
+h2{font-size:17px;margin:28px 0 4px;}
+.section-sub{font-size:13px;color:var(--ink-2);margin:0 0 12px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.card.mine{border-color:#fab219;box-shadow:0 0 0 1px #fab21966;}
+.card-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+.card-title{font-size:16px;font-weight:600;word-break:break-word;}
+.card-amount{font-size:15px;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap;}
+.card-meta{font-size:12.5px;color:var(--muted);margin-top:2px;word-break:break-word;}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center;}
+.status-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:4px 10px;border-radius:100px;}
+.needs-you{font-size:12.5px;font-weight:600;color:#9a6a00;}
+@media (prefers-color-scheme:dark){.needs-you{color:#fab219;}}
+.card-explanation{font-size:13.5px;color:var(--ink-2);margin-top:10px;line-height:1.45;}
+details{margin-top:10px;}
+summary{font-size:13px;color:var(--link);cursor:pointer;font-weight:600;}
+.detail-grid{margin-top:10px;font-size:13.5px;line-height:1.5;}
+.detail-grid dt{font-weight:600;margin-top:8px;color:var(--ink-2);font-size:12.5px;text-transform:uppercase;letter-spacing:0.03em;}
+.detail-grid dd{margin:2px 0 0;word-break:break-word;white-space:pre-wrap;}
+.items{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:2px;}
+.items td{padding:4px 0;border-bottom:1px solid var(--grid);}
+.items td.price{text-align:right;font-variant-numeric:tabular-nums;}
+.items tr.total td{font-weight:600;border-bottom:none;}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.chip{font-size:11.5px;padding:3px 8px;border-radius:100px;white-space:nowrap;color:var(--ink-2);}
+.card-footer{margin-top:12px;padding-top:10px;border-top:1px solid var(--grid);font-size:13px;}
+.actions{display:flex;flex-wrap:wrap;gap:8px;}
+.act{font:inherit;font-size:14px;font-weight:600;border-radius:8px;padding:9px 16px;cursor:pointer;border:1px solid transparent;}
+.act:disabled{opacity:0.5;cursor:default;}
+.act.approve{background:#0ca30c;color:#fff;}
+.act.info{background:transparent;color:var(--ink);border-color:var(--muted);}
+.act.deny{background:transparent;color:#d03b3b;border-color:#d03b3b;}
+.act.cancel{background:transparent;color:var(--ink-2);border-color:var(--border);}
+.confirm-text{font-size:14px;margin:0 0 10px;line-height:1.4;}
+.note{color:var(--muted);}
+.msg{font-size:13.5px;margin-top:12px;padding:8px 12px;border-radius:8px;}
+.msg.ok{background:#0ca30c1f;border:1px solid #0ca30c59;}
+.msg.err{background:#d03b3b1f;border:1px solid #d03b3b59;}
+.pdf-link{color:var(--link);text-decoration:none;font-weight:600;}
+.pdf-link:hover{text-decoration:underline;}
+.empty{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:24px;text-align:center;color:var(--ink-2);font-size:14px;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+var API = "https://script.google.com/macros/s/AKfycbx6PMK6Tmhlb4PShhLhNkatTqqzrGwExzpIoQjYlpTIyifETPhOanhO4VLMH22jQHtS/exec";
+var params = new URLSearchParams(window.location.search);
+var U = params.get("u") || "";
+var S = params.get("s") || "";
+var state = null;
+var loadError = "";
+var busy = false;
+var confirming = null;
+var msgs = {};
+
+function el(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined && text !== null) n.textContent = text;
+  return n;
+}
+function money(v) {
+  return (v === null || v === undefined) ? "—" : "$" + Number(v).toFixed(2);
+}
+function priceText(p) {
+  var s = String(p);
+  return isNaN(Number(s)) || s === "" ? s : "$" + Number(s).toFixed(2);
+}
+
+function call(extra) {
+  var q = new URLSearchParams(extra);
+  q.set("view", "api");
+  q.set("u", U);
+  q.set("s", S);
+  return fetch(API + "?" + q.toString(), { method: "GET", credentials: "omit", redirect: "follow" })
+    .then(function (r) { return r.json(); });
+}
+
+function chip(d) {
+  var ok = d.decision === "Approved";
+  var color = ok ? "#0ca30c" : "#898781";
+  var c = el("span", "chip");
+  c.style.background = color + "1f";
+  c.style.border = "1px solid " + color + "40";
+  var ic = el("span", null, ok ? "✓" : "○");
+  ic.style.color = color;
+  c.appendChild(ic);
+  c.appendChild(document.createTextNode(" " + d.name + ": " + (ok ? "Approved" : "Pending")));
+  return c;
+}
+
+function detailRow(dl, label, value) {
+  if (!value) return;
+  dl.appendChild(el("dt", null, label));
+  dl.appendChild(el("dd", null, value));
+}
+
+function detailsBlock(item) {
+  var d = el("details");
+  d.appendChild(el("summary", null, "View full request"));
+  var dl = el("dl", "detail-grid");
+  detailRow(dl, "Requestor", item.name + (item.email ? " (" + item.email + ")" : ""));
+  detailRow(dl, "Date on request", item.date);
+  detailRow(dl, "Target audience / beneficiaries", item.beneficiaries);
+  detailRow(dl, "Explanation", item.explanation);
+  if (item.items.length) {
+    dl.appendChild(el("dt", null, "Materials"));
+    var dd = el("dd");
+    var t = el("table", "items");
+    item.items.forEach(function (m) {
+      var tr = el("tr");
+      tr.appendChild(el("td", null, m.material));
+      tr.appendChild(el("td", "price", priceText(m.price)));
+      t.appendChild(tr);
+    });
+    var tot = el("tr", "total");
+    tot.appendChild(el("td", null, "Total"));
+    tot.appendChild(el("td", "price", money(item.total)));
+    t.appendChild(tot);
+    dd.appendChild(t);
+    dl.appendChild(dd);
+  }
+  detailRow(dl, "Digitally signed by", item.signature);
+  d.appendChild(dl);
+  return d;
+}
+
+function confirmText(item, action) {
+  var who = item.name + " (" + money(item.total) + ")";
+  if (action === "approve") return "Approve the request from " + who + "?";
+  if (action === "deny") return "Deny the request from " + who + "? The requestor will be notified.";
+  return "Ask for more information on the request from " + who + "? The requestor will be told to expect a follow-up email from you.";
+}
+
+function actionButton(label, cls, handler) {
+  var b = el("button", "act " + cls, label);
+  b.type = "button";
+  b.disabled = busy;
+  b.onclick = handler;
+  return b;
+}
+
+function actionsBlock(item) {
+  var box = el("div", "card-footer");
+  if (confirming && confirming.row === item.row) {
+    box.appendChild(el("p", "confirm-text", confirmText(item, confirming.action)));
+    var row = el("div", "actions");
+    var cls = confirming.action === "approve" ? "approve" : (confirming.action === "deny" ? "deny" : "info");
+    var label = confirming.action === "approve" ? "Yes, approve" : (confirming.action === "deny" ? "Yes, deny" : "Yes, request info");
+    row.appendChild(actionButton(busy ? "Saving…" : label, cls, function () { doAction(item.row, confirming.action); }));
+    row.appendChild(actionButton("Cancel", "cancel", function () { confirming = null; render(); }));
+    box.appendChild(row);
+    return box;
+  }
+  var r = el("div", "actions");
+  r.appendChild(actionButton("Approve", "approve", function () { confirming = { row: item.row, action: "approve" }; render(); }));
+  r.appendChild(actionButton("Request more info", "info", function () { confirming = { row: item.row, action: "info" }; render(); }));
+  r.appendChild(actionButton("Deny", "deny", function () { confirming = { row: item.row, action: "deny" }; render(); }));
+  box.appendChild(r);
+  return box;
+}
+
+function footerNote(item) {
+  var f = el("div", "card-footer");
+  if (item.closedKind === "approved") {
+    if (item.pdfUrl && item.pdfUrl.indexOf("https://") === 0) {
+      var a = el("a", "pdf-link", "View signature-ready PDF →");
+      a.href = item.pdfUrl;
+      a.target = "_blank";
+      a.rel = "noopener";
+      f.appendChild(a);
+    } else {
+      f.appendChild(el("span", "note", "Fully approved. The PDF link was not recorded - check with the PTO president."));
+    }
+  } else if (item.closedKind === "denied") {
+    f.appendChild(el("span", "note", "This request is closed."));
+  } else if (item.myDecision === "Approved") {
+    f.appendChild(el("span", "note", "You approved this request. Waiting on the other reviewers."));
+  } else {
+    f.appendChild(el("span", "note", "Currently with the " + (item.stage === "teacher" ? "teachers" : "PTO board") + " for review."));
+  }
+  return f;
+}
+
+function card(item) {
+  var c = el("div", "card" + (item.canAct ? " mine" : ""));
+  var top = el("div", "card-top");
+  top.appendChild(el("div", "card-title", item.name));
+  top.appendChild(el("div", "card-amount", money(item.total)));
+  c.appendChild(top);
+  c.appendChild(el("div", "card-meta", "Submitted " + item.submitted + (item.beneficiaries ? " · For: " + item.beneficiaries : "")));
+  var badges = el("div", "badges");
+  var b = el("span", "status-badge");
+  b.style.background = item.color + "1f";
+  b.style.border = "1px solid " + item.color + "59";
+  var ic = el("span", null, item.icon);
+  ic.style.color = item.color;
+  b.appendChild(ic);
+  b.appendChild(document.createTextNode(" " + item.status));
+  badges.appendChild(b);
+  if (item.canAct) badges.appendChild(el("span", "needs-you", "Waiting for your decision"));
+  c.appendChild(badges);
+  var snippet = item.explanation.length > 160 ? item.explanation.slice(0, 160) + "…" : item.explanation;
+  if (snippet) c.appendChild(el("div", "card-explanation", snippet));
+  c.appendChild(detailsBlock(item));
+  var chips = el("div", "chip-row");
+  item.decisions.forEach(function (d) { chips.appendChild(chip(d)); });
+  c.appendChild(chips);
+  if (item.canAct) c.appendChild(actionsBlock(item));
+  else c.appendChild(footerNote(item));
+  var m = msgs[item.row];
+  if (m) c.appendChild(el("div", "msg " + (m.ok ? "ok" : "err"), m.text));
+  return c;
+}
+
+function stat(value, label, color) {
+  var s = el("div", "stat");
+  s.style.borderLeftColor = color;
+  s.appendChild(el("div", "stat-value", String(value)));
+  s.appendChild(el("div", "stat-label", label));
+  return s;
+}
+
+function section(title, sub, items, emptyText) {
+  var frag = document.createDocumentFragment();
+  frag.appendChild(el("h2", null, title + " (" + items.length + ")"));
+  frag.appendChild(el("p", "section-sub", sub));
+  if (!items.length) frag.appendChild(el("div", "empty", emptyText));
+  items.forEach(function (it) { frag.appendChild(card(it)); });
+  return frag;
+}
+
+function render() {
+  var root = document.getElementById("app");
+  root.textContent = "";
+  root.appendChild(el("h1", null, "PTO Mini Grant Dashboard"));
+  if (!state) {
+    if (loadError) {
+      root.appendChild(el("div", "msg err", loadError));
+      var rb0 = el("button", "btn", "Try again");
+      rb0.type = "button";
+      rb0.style.marginTop = "12px";
+      rb0.onclick = function () { load(); };
+      root.appendChild(rb0);
+    } else {
+      root.appendChild(el("p", "subtitle", "Loading your dashboard…"));
+    }
+    return;
+  }
+  var pending = state.pending;
+  var closed = state.closed;
+  var approved = closed.filter(function (c) { return c.closedKind === "approved"; }).length;
+  var denied = closed.length - approved;
+  root.appendChild(el("p", "subtitle", "Zach Elementary PTO — signed in as " + state.name + " (" + state.role + "). This link is personal to you; please do not share it."));
+  var bar = el("div", "toolbar");
+  var rb = el("button", "btn", "↻ Refresh");
+  rb.type = "button";
+  rb.disabled = busy;
+  rb.onclick = refresh;
+  bar.appendChild(rb);
+  bar.appendChild(el("span", "updated", "Updated " + state.updated));
+  root.appendChild(bar);
+  var stats = el("div", "stats");
+  stats.appendChild(stat(state.waiting, "Waiting for you", "#fab219"));
+  stats.appendChild(stat(pending.length, "Pending (all)", "#898781"));
+  stats.appendChild(stat(approved, "Approved", "#0ca30c"));
+  stats.appendChild(stat(denied, "Rejected", "#d03b3b"));
+  root.appendChild(stats);
+  root.appendChild(section("Pending", "Requests still in review. Ones waiting for your decision are listed first.", pending, "Nothing pending right now."));
+  root.appendChild(section("Approved or rejected", "Closed requests, newest first.", closed, "No closed requests yet."));
+}
+
+function doAction(row, action) {
+  if (busy) return;
+  busy = true;
+  render();
+  call({ op: "action", row: String(row), act: action })
+    .then(function (res) {
+      busy = false;
+      confirming = null;
+      if (res.state) state = res.state;
+      msgs[row] = { ok: !!res.ok, text: res.message || "" };
+      render();
+    })
+    .catch(function () {
+      busy = false;
+      confirming = null;
+      msgs[row] = { ok: false, text: "Could not reach the server. Please refresh and check the status before trying again." };
+      render();
+    });
+}
+
+function refresh() {
+  if (busy) return;
+  busy = true;
+  render();
+  call({ op: "state" })
+    .then(function (res) {
+      busy = false;
+      if (res.ok) { state = res.state; msgs = {}; confirming = null; }
+      render();
+    })
+    .catch(function () {
+      busy = false;
+      render();
+    });
+}
+
+function load() {
+  loadError = "";
+  state = null;
+  render();
+  if (!U || !S) {
+    loadError = "This link is not complete. Please use the personal dashboard link from your most recent PTO Mini Grant email.";
+    render();
+    return;
+  }
+  call({ op: "state" })
+    .then(function (res) {
+      if (res && res.ok) { state = res.state; }
+      else { loadError = (res && res.message) || "This link is not valid. Please use the personal dashboard link from your most recent PTO Mini Grant email."; }
+      render();
+    })
+    .catch(function () {
+      loadError = "Could not reach the server. Please check your connection and try again.";
+      render();
+    });
+}
+
+load();
+</script>
+</body>
+</html>
