@@ -199,6 +199,8 @@ function footerNote(item) {
     }
   } else if (item.closedKind === "denied") {
     f.appendChild(el("span", "note", "This request is closed."));
+  } else if (item.stage === "meeting") {
+    f.appendChild(el("span", "note", "Approved by the board. Waiting for the final vote at the PTO meeting."));
   } else if (item.myDecision === "Approved") {
     f.appendChild(el("span", "note", "You approved this request. Waiting on the other reviewers."));
   } else {
